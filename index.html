@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f5eee6">
+<meta name="robots" content="noindex">
+<title>a mi dalaink</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#f5eee6; --paper-2:#efe5da; --ink:#2a2421; --muted:#8a7d74;
+    --accent:#b9706a; --accent-soft:#e8cfc8; --vinyl:#1d1918;
+  }
+  body.p2{ --accent:#7d8f6e; --accent-soft:#d7dfcc; }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  html,body{height:100%}
+  body{
+    font-family:Inter,system-ui,sans-serif;color:var(--ink);background:var(--paper);
+    min-height:100svh;display:flex;flex-direction:column;align-items:center;
+    padding:calc(env(safe-area-inset-top) + 28px) 24px calc(env(safe-area-inset-bottom) + 28px);
+    background-image:
+      radial-gradient(1200px 600px at 50% -10%, #fffaf4 0%, transparent 60%),
+      radial-gradient(800px 500px at 110% 110%, var(--accent-soft) 0%, transparent 55%);
+    background-attachment:fixed; overflow-x:hidden;
+  }
+  /* subtle film grain */
+  body::after{content:"";position:fixed;inset:-50%;pointer-events:none;opacity:.07;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");}
+  .top{width:100%;max-width:420px;display:flex;justify-content:space-between;align-items:center;
+    font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
+  .top b{font-weight:600;color:var(--accent)}
+  main{flex:1;width:100%;max-width:420px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:34px;text-align:center}
+
+  /* record */
+  .record-wrap{position:relative;width:min(72vw,300px);aspect-ratio:1}
+  .yt{position:absolute;left:50%;top:50%;width:200px;height:200px;transform:translate(-50%,-50%);
+      overflow:hidden;border-radius:50%;z-index:0;pointer-events:none}
+  .yt iframe{width:200px;height:200px;border:0}
+  .record{position:absolute;inset:0;border-radius:50%;z-index:1;
+    background:
+      radial-gradient(circle at 50% 50%, var(--paper) 0 3.2%, transparent 3.4%),
+      radial-gradient(circle at 50% 50%, var(--accent) 0 30%, transparent 30.4%),
+      repeating-radial-gradient(circle at 50% 50%, #221d1c 0 1.1px, #151211 1.6px 2.6px),
+      var(--vinyl);
+    box-shadow:0 30px 60px -20px rgba(42,36,33,.45), 0 8px 18px -8px rgba(42,36,33,.35), inset 0 0 0 1px rgba(255,255,255,.04);
+    transition:transform .6s ease}
+  .record::before{content:"";position:absolute;inset:0;border-radius:50%;
+    background:conic-gradient(from 210deg, transparent 0 8%, rgba(255,255,255,.13) 12%, transparent 18% 58%, rgba(255,255,255,.09) 63%, transparent 69%)}
+  .label{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:2;pointer-events:none}
+  .label span{font-family:Fraunces,serif;font-style:italic;font-size:clamp(13px,3.6vw,16px);color:#fff8f2;opacity:.92;
+    transform:translateY(-60px);letter-spacing:.02em}
+  .spinning .record{animation:spin 3.2s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+
+  .play{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:3;
+    width:78px;height:78px;border-radius:50%;border:0;cursor:pointer;
+    background:var(--paper);color:var(--ink);display:grid;place-items:center;
+    box-shadow:0 10px 24px -8px rgba(0,0,0,.5);transition:transform .2s ease, opacity .3s}
+  .play:active{transform:translate(-50%,-50%) scale(.94)}
+  .play svg{width:28px;height:28px}
+  .play[disabled]{opacity:.55}
+
+  h1{font-family:Fraunces,serif;font-weight:400;font-size:clamp(28px,8vw,38px);line-height:1.1;letter-spacing:-.01em}
+  h1 em{font-style:italic;color:var(--accent)}
+  .hint{color:var(--muted);font-size:15px;line-height:1.5;max-width:300px}
+
+  .eq{display:flex;gap:4px;height:18px;align-items:flex-end;justify-content:center;opacity:0;transition:opacity .4s}
+  .spinning .eq{opacity:1}
+  .eq i{width:4px;background:var(--accent);border-radius:2px;animation:eq 1s ease-in-out infinite}
+  .eq i:nth-child(2){animation-delay:-.3s}.eq i:nth-child(3){animation-delay:-.6s}.eq i:nth-child(4){animation-delay:-.15s}.eq i:nth-child(5){animation-delay:-.45s}
+  @keyframes eq{0%,100%{height:4px}50%{height:18px}}
+
+  .btn{appearance:none;border:0;cursor:pointer;font:600 15px/1 Inter,sans-serif;letter-spacing:.06em;text-transform:uppercase;
+    padding:18px 30px;border-radius:999px;background:var(--ink);color:var(--paper);
+    box-shadow:0 12px 26px -12px rgba(42,36,33,.6);transition:transform .15s ease, opacity .3s}
+  .btn:active{transform:scale(.97)}
+  .btn.ghost{background:transparent;color:var(--ink);box-shadow:inset 0 0 0 1.5px rgba(42,36,33,.25)}
+  .row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+  .hidden{display:none!important}
+
+  /* reveal card */
+  .answer{width:100%;background:#fffaf5;border-radius:22px;padding:30px 24px 26px;position:relative;
+    box-shadow:0 30px 60px -30px rgba(42,36,33,.45), 0 0 0 1px rgba(42,36,33,.05);
+    animation:pop .7s cubic-bezier(.2,.9,.25,1.15) both}
+  .answer .year{font-family:Fraunces,serif;font-weight:600;font-size:clamp(64px,22vw,96px);line-height:.9;color:var(--accent);letter-spacing:-.03em}
+  .answer .title{font-family:Fraunces,serif;font-size:clamp(22px,6.4vw,28px);line-height:1.2;margin-top:16px}
+  .answer .artist{font-size:14px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-top:10px}
+  .answer::before,.answer::after{content:"";position:absolute;top:50%;width:18px;height:18px;border-radius:50%;background:var(--paper);transform:translateY(-50%)}
+  .answer::before{left:-9px}.answer::after{right:-9px}
+  @keyframes pop{0%{opacity:0;transform:translateY(24px) scale(.96)}100%{opacity:1;transform:none}}
+  .flip{font-family:Fraunces,serif;font-style:italic;color:var(--muted);font-size:16px}
+
+  .small{font-size:13px;color:var(--muted)}
+  .small a{color:var(--accent)}
+  footer{font-family:Fraunces,serif;font-style:italic;color:var(--muted);font-size:13px;opacity:.8;margin-top:18px}
+</style>
+</head>
+<body>
+  <div class="top"><span>a mi dalaink</span><span id="cardno"></span></div>
+
+  <main id="home" class="hidden">
+    <div class="record-wrap"><div class="record"></div><div class="label"><span>♪</span></div></div>
+    <h1>Szkennelj be egy <em>kártyát</em></h1>
+    <p class="hint">Nyisd meg a telefonod kameráját, és mutasd a QR-kódra. A zene itt fog szólni, de a cím titok marad.</p>
+  </main>
+
+  <main id="game" class="hidden">
+    <div class="record-wrap" id="recwrap">
+      <div class="yt"><div id="player"></div></div>
+      <div class="record"></div>
+      <div class="label"><span>no. <b id="labelno"></b></span></div>
+      <button class="play" id="play" aria-label="Lejátszás" disabled>
+        <svg id="icoPlay" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13a1 1 0 0 0 1.5.86l10.5-6.5a1 1 0 0 0 0-1.72L9.5 4.64A1 1 0 0 0 8 5.5z"/></svg>
+        <svg id="icoPause" class="hidden" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="5" width="4" height="14" rx="1.2"/><rect x="14" y="5" width="4" height="14" rx="1.2"/></svg>
+      </button>
+    </div>
+
+    <div id="guessing">
+      <div class="eq"><i></i><i></i><i></i><i></i><i></i></div>
+      <h1 id="prompt" style="margin-top:14px">Mi ez a <em>dal?</em></h1>
+      <p class="hint" style="margin:12px auto 0">Előadó, cím, és ha mersz: évszám.</p>
+    </div>
+
+    <div class="row" id="revealRow">
+      <button class="btn" id="reveal">Felfedés</button>
+    </div>
+
+    <div id="result" class="hidden" style="width:100%">
+      <div class="answer">
+        <div class="year" id="aYear"></div>
+        <div class="title" id="aTitle"></div>
+        <div class="artist" id="aArtist"></div>
+      </div>
+      <p class="flip" style="margin-top:22px">Eltaláltad? Akkor tiéd a kártya – fordítsd meg ✦</p>
+    </div>
+
+    <p class="small hidden" id="fallback">A zene nem indul? <a id="ytlink" href="#" target="_blank" rel="noopener">Nyisd meg itt</a> (vigyázz, ott látszik a cím).</p>
+  </main>
+
+  <footer>karácsony, 2026</footer>
+
+<script>
+const DATA = "eyIxIjogWyJUYXlsb3IgU3dpZnQiLCAiU2hha2UgSXQgT2ZmIiwgMjAxNCwgIm5mV2xvdDZoX0pNIiwgIlpSVV85R3dpVHlBIiwgMV0sICIyIjogWyJCb24tQm9uIiwgIlZhbGFtaSBBbWVyaWthIiwgMjAwMiwgIll2Ym5vR2RQWjQ4IiwgIkNScjJXN19faTkwIiwgMl0sICIzIjogWyJPbmUgRGlyZWN0aW9uIiwgIldoYXQgTWFrZXMgWW91IEJlYXV0aWZ1bCIsIDIwMTEsICJRSk8zUk9ULUE0RSIsICJnTmdnUldUamxTWSIsIDFdLCAiNCI6IFsiR2xvcmlhIEdheW5vciIsICJJIFdpbGwgU3Vydml2ZSIsIDE5NzgsICI2ZFlXZTFjM095VSIsICJCTU9hZ2ZsaG1zWSIsIDFdLCAiNSI6IFsiQm9uLUJvbiIsICJBIHNleGVwaWxlbSIsIDE5OTksICIxVDJNbUtlT2tWNCIsICJLWlNTR0t6UFZNMCIsIDFdLCAiNiI6IFsiVE5UIiwgIlRpdGtvcyDDvHplbmV0IiwgMTk5NywgIi1ienZCOGFQc3p3IiwgImozMTk4Vnl5UXlBIiwgMl0sICI3IjogWyJIb25leWJlYXN0IiwgIkEgbGVnbmFneW9iYiBoxZFzIiwgMjAxNCwgIlhOY3FHZXc3X2ZzIiwgImlqVVhwS014a2hzIiwgMV0sICI4IjogWyJLSVNTIiwgIkkgV2FzIE1hZGUgZm9yIExvdmluJyBZb3UiLCAxOTc5LCAiMTJmSkFuYWlmMzQiLCAiWmhJc0FaTzVnbDAiLCAyXSwgIjkiOiBbIk1yLiBNaXNzaCwgUmF1bCAmIEhvcnbDoXRoIFRhbcOhcyIsICJCZWzDqWQgZXN0ZW0iLCAyMDEzLCAiNTIwTE55MW41WFUiLCAiVF8yN0Y5YkcwNUUiLCAxXSwgIjEwIjogWyJIYXJyeSBTdHlsZXMiLCAiV2F0ZXJtZWxvbiBTdWdhciIsIDIwMTksICJFMDdzNVpZeWdNZyIsICJLUE1fQllsLUVhUSIsIDFdLCAiMTEiOiBbIlN6YW5kaSIsICJOeXVnaSwgZG9raSEiLCAxOTkzLCAicnZDanctQ0g0b0kiLCAiZnRPeHllQXUyTzgiLCAyXSwgIjEyIjogWyJSZXB1YmxpYyIsICJTesOhbGxqIGVsLCBraXNtYWTDoXIiLCAxOTk1LCAiLWI1alVvYlZOSTQiLCAiM2VWQ1BxS24xNkUiLCAyXSwgIjEzIjogWyJLYXR5IFBlcnJ5IiwgIkkgS2lzc2VkIGEgR2lybCIsIDIwMDgsICJ0QXA5Qktvc1pYcyIsICJ1c3ZUYnFUSHd5dyIsIDFdLCAiMTQiOiBbIkRSIEJSUyAmIEJlcmtlcyBPbGl2w6lyIiwgIsOJdnN6YWtvayIsIDIwMjAsICJLY3ltQllyeDFETSIsICJJY296TnIxVU1pcyIsIDJdLCAiMTUiOiBbIlZhcmdhIFZpa3RvciIsICJMZWhldCB6w7ZsZCBheiDDqWciLCAyMDEwLCAiM0p2LUJFUEYxOG8iLCAiX1N4RVBUd0FZVGMiLCAxXSwgIjE2IjogWyJ3aWxsLmkuYW0gJiBCcml0bmV5IFNwZWFycyIsICJTY3JlYW0gJiBTaG91dCIsIDIwMTIsICJFRC1YS2dkdDYtNCIsICJhNUQ4Q1R0LXRmcyIsIDJdLCAiMTciOiBbIk9uZSBEaXJlY3Rpb24iLCAiUGVyZmVjdCIsIDIwMTUsICJIbzMyT2g2YjRqYyIsICI2cG9Ka3pBbDZTcyIsIDFdLCAiMTgiOiBbIlphbnppYmFyIiwgIlN6ZXJlbGVtcsWRbCBzesOzIHNlbSB2b2x0IiwgMjAwMiwgImNXT0N4ODVQaTBvIiwgIlB2cWpFWk9UaC1VIiwgMl0sICIxOSI6IFsiWm9sdMOhbiBFcmlrYSIsICJTemVyZWxlbXJlIHN6w7xsZXR0ZW0iLCAxOTg3LCAiaHo1NlcyejVIMm8iLCAiWklQRl9iSEE5MlkiLCAyXSwgIjIwIjogWyJNw6F0w6kgUMOpdGVyIiwgIlplbmUgbsOpbGvDvGwgbWl0IMOpcmVrIMOpbiIsIDE5ODIsICJOS3pXZEU0WU9UWSIsICJlbkRjZ24yVUVtcyIsIDFdLCAiMjEiOiBbIkJydW5vIE1hcnMiLCAiSnVzdCB0aGUgV2F5IFlvdSBBcmUiLCAyMDEwLCAiTGpoQ0VoV2lLWGsiLCAiU09EaGwwNDZSUmMiLCAxXSwgIjIyIjogWyJFZGRhIE3FsXZlayIsICLDgWxtb2R0YW0gZWd5IHZpbMOhZ290IG1hZ2FtbmFrIiwgMTk4MCwgIlhoY1F1cDRiZDB3IiwgIllZTDBBaWhzdE5rIiwgMV0sICIyMyI6IFsiSGV2ZXNpIFRhbcOhcyIsICJFenQgZWd5IMOpbGV0ZW4gw6F0IGtlbGwgasOhdHN6YW5pIiwgMTk5NCwgIjAxbW80S2tERk1vIiwgIjRmbklCTDd2NFhvIiwgMl0sICIyNCI6IFsiTcOhdMOpIFDDqXRlciIsICJFZ3kgZGFyYWJvdCBhIHN6w612ZW1ixZFsIiwgMTk3OSwgIkhReG12SlFUdzg0IiwgIkFqdFZ0X21wZzZVIiwgMl0sICIyNSI6IFsiTcOlbmVza2luIiwgIkkgV2FubmEgQmUgWW91ciBTbGF2ZSIsIDIwMjEsICJ5T2I5WGF1ZzM1TSIsICIwVC1CQ0lGZXFxOCIsIDFdLCAiMjYiOiBbIkdyb292ZWhvdXNlIiwgIkhham5hbCIsIDIwMDEsICJ2SnRFekViX3RDSSIsICJ1MjVWSDFTRy1XSSIsIDJdLCAiMjciOiBbIk9uZSBEaXJlY3Rpb24iLCAiU3RlYWwgTXkgR2lybCIsIDIwMTQsICJVcHNLR3ZQakFndyIsICJnbk5famllc0lrTSIsIDJdLCAiMjgiOiBbIsOBa29zIiwgIklseWVuZWsgdm9sdHVuayIsIDE5OTcsICJVUmJZZWk1MTNZMCIsICJkbWR0S3NVWkYxayIsIDJdLCAiMjkiOiBbIldvbGYgS2F0aSIsICJTemVyZWxlbSwgbWnDqXJ0IG3Dumxzej8iLCAyMDExLCAic2VpcC11NEtTY1UiLCAib0Jya3ItOVBZYUUiLCAyXSwgIjMwIjogWyJGb2xsb3cgVGhlIEZsb3ciLCAiVGF2YXN6IiwgMjAyMCwgIjQtTXlHOV84VkFnIiwgIkFTOEpBUDFWVXdRIiwgMl0sICIzMSI6IFsiSGFsb3R0IFDDqW56IiwgIkRhcmFib2tyYSB0w7ZydGVkIGEgc3rDrXZlbSIsIDIwMTUsICJLVVU3UnBHQVJubyIsICJzdUpDWl9DVXktZyIsIDFdLCAiMzIiOiBbIlNvdWx3YXZlIiwgIk5laGV6ZW4gbcO6bGlrIiwgMjAxNywgIkhaVDYyRll2eDNZIiwgIlI2UTBnNy1MQW1FIiwgMl0sICIzMyI6IFsiQmFja3N0cmVldCBCb3lzIiwgIkV2ZXJ5Ym9keSAoQmFja3N0cmVldCdzIEJhY2spIiwgMTk5NywgIjZNNnNhbVBFTXBNIiwgIk02LUE2c0FhV1VnIiwgMV0sICIzNCI6IFsiS2VzaGEiLCAiVGlLIFRvSyIsIDIwMDksICJpUDZYcExRTTJDcyIsICJSeFVaTG1ONVJzWSIsIDFdLCAiMzUiOiBbIlNvdWx3YXZlIiwgIkthbGFuZG9yIiwgMjAxNiwgInpnYzMwRGxSUjhBIiwgIjAzYzNUbXo5TlV3IiwgMV0sICIzNiI6IFsiQmFieSBTaXN0ZXJzIiwgIlN6ZXJlc2QgYSB0ZXN0ZW0iLCAxOTk5LCAiaVVUdmZyazBwQkEiLCAiUy1xQ1FfNFVFeUEiLCAxXSwgIjM3IjogWyJCZXJlY3praSBab2x0w6FuIiwgIktlcmVrIGVnw6lzeiIsIDIwMTAsICI5aUlvQ2RNb1pYcyIsICJXS216WWpNQnJSbyIsIDFdLCAiMzgiOiBbIkJlYXRyaWNlIiwgIjggw7NyYSBtdW5rYSIsIDE5OTEsICJiNVRFZzNXTzdfUSIsICJQenVESlhQMVRvbyIsIDJdLCAiMzkiOiBbIkphbmljc8OhayBWZWNhIiwgIkxhYmlyaW50dXMiLCAyMDExLCAibHMwcTQxMV93bnciLCAiNG9KRFVZNzRxOEEiLCAyXSwgIjQwIjogWyJTesOpY3NpIFDDoWwiLCAiQ2Fyb2xpbmEiLCAxOTc0LCAiTUpRT0ZVSjBpcnciLCAibEVHc1pQVmNpWFEiLCAyXX0=";
+const songs = JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(DATA), c => c.charCodeAt(0))));
+
+const params = new URLSearchParams(location.search);
+const k = params.get('k') || (location.hash||'').replace('#','');
+const song = songs[k];
+const $ = id => document.getElementById(id);
+
+if(!song){
+  $('home').classList.remove('hidden');
+} else {
+  if(song[5] === 2) document.body.classList.add('p2');
+  $('game').classList.remove('hidden');
+  $('cardno').innerHTML = 'kártya <b>' + String(k).padStart(2,'0') + '</b>';
+  $('labelno').textContent = String(k).padStart(2,'0');
+  $('aYear').textContent = song[2];
+  $('aTitle').textContent = song[1];
+  $('aArtist').textContent = song[0];
+  const ids = [song[3], song[4]];
+  let idx = 0, player = null, ready = false, playing = false, started = false;
+
+  $('ytlink').href = 'https://www.youtube.com/watch?v=' + ids[0];
+
+  window.onYouTubeIframeAPIReady = function(){
+    player = new YT.Player('player', {
+      width: 200, height: 200, videoId: ids[0],
+      playerVars: { playsinline: 1, controls: 0, disablekb: 1, rel: 0, fs: 0, iv_load_policy: 3, modestbranding: 1 },
+      events: {
+        onReady: () => { ready = true; $('play').disabled = false; },
+        onStateChange: e => {
+          if(e.data === YT.PlayerState.PLAYING){ setPlaying(true); }
+          else if(e.data === YT.PlayerState.PAUSED || e.data === YT.PlayerState.ENDED){ setPlaying(false); }
+        },
+        onError: () => {
+          if(idx < ids.length - 1){
+            idx++;
+            $('ytlink').href = 'https://www.youtube.com/watch?v=' + ids[idx];
+            player.loadVideoById(ids[idx]);
+          } else {
+            $('fallback').classList.remove('hidden');
+          }
+        }
+      }
+    });
+  };
+  const s = document.createElement('script');
+  s.src = 'https://www.youtube.com/iframe_api';
+  s.onerror = () => $('fallback').classList.remove('hidden');
+  document.head.appendChild(s);
+
+  function setPlaying(on){
+    playing = on;
+    $('recwrap').parentElement.classList.toggle('spinning', on);
+    $('icoPlay').classList.toggle('hidden', on);
+    $('icoPause').classList.toggle('hidden', !on);
+  }
+
+  $('play').addEventListener('click', () => {
+    if(!ready) return;
+    if(playing){ player.pauseVideo(); return; }
+    player.unMute(); player.setVolume(100); player.playVideo();
+    if(!started){
+      started = true;
+      // if nothing starts within 6 s, offer the fallback link
+      setTimeout(() => { if(!playing) $('fallback').classList.remove('hidden'); }, 6000);
+    }
+  });
+
+  $('reveal').addEventListener('click', () => {
+    $('revealRow').classList.add('hidden');
+    $('guessing').classList.add('hidden');
+    $('result').classList.remove('hidden');
+    $('result').scrollIntoView({behavior:'smooth', block:'center'});
+  });
+}
+</script>
+</body>
+</html>
