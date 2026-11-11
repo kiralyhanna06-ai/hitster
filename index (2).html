@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f5eee6">
+<meta name="robots" content="noindex">
+<title>a mi dalaink</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#f5eee6; --paper-2:#efe5da; --ink:#2a2421; --muted:#8a7d74;
+    --accent:#b9706a; --accent-soft:#e8cfc8; --vinyl:#1d1918;
+  }
+  body.p2{ --accent:#7d8f6e; --accent-soft:#d7dfcc; }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  html,body{height:100%}
+  body{
+    font-family:Inter,system-ui,sans-serif;color:var(--ink);background:var(--paper);
+    min-height:100svh;display:flex;flex-direction:column;align-items:center;
+    padding:calc(env(safe-area-inset-top) + 28px) 24px calc(env(safe-area-inset-bottom) + 28px);
+    background-image:
+      radial-gradient(1200px 600px at 50% -10%, #fffaf4 0%, transparent 60%),
+      radial-gradient(800px 500px at 110% 110%, var(--accent-soft) 0%, transparent 55%);
+    background-attachment:fixed; overflow-x:hidden;
+  }
+  /* subtle film grain */
+  body::after{content:"";position:fixed;inset:-50%;pointer-events:none;opacity:.07;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");}
+  .top{width:100%;max-width:420px;display:flex;justify-content:space-between;align-items:center;
+    font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
+  .top b{font-weight:600;color:var(--accent)}
+  main{flex:1;width:100%;max-width:420px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:34px;text-align:center}
+
+  /* record */
+  .record-wrap{position:relative;width:min(72vw,300px);aspect-ratio:1}
+  .yt{position:absolute;left:50%;top:50%;width:200px;height:200px;transform:translate(-50%,-50%);
+      overflow:hidden;border-radius:50%;z-index:0;pointer-events:none}
+  .yt iframe{width:200px;height:200px;border:0}
+  .record{position:absolute;inset:0;border-radius:50%;z-index:1;
+    background:
+      radial-gradient(circle at 50% 50%, var(--paper) 0 3.2%, transparent 3.4%),
+      radial-gradient(circle at 50% 50%, var(--accent) 0 30%, transparent 30.4%),
+      repeating-radial-gradient(circle at 50% 50%, #221d1c 0 1.1px, #151211 1.6px 2.6px),
+      var(--vinyl);
+    box-shadow:0 30px 60px -20px rgba(42,36,33,.45), 0 8px 18px -8px rgba(42,36,33,.35), inset 0 0 0 1px rgba(255,255,255,.04);
+    transition:transform .6s ease}
+  .record::before{content:"";position:absolute;inset:0;border-radius:50%;
+    background:conic-gradient(from 210deg, transparent 0 8%, rgba(255,255,255,.13) 12%, transparent 18% 58%, rgba(255,255,255,.09) 63%, transparent 69%)}
+  .label{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:2;pointer-events:none}
+  .label span{font-family:Fraunces,serif;font-style:italic;font-size:clamp(13px,3.6vw,16px);color:#fff8f2;opacity:.92;
+    transform:translateY(-60px);letter-spacing:.02em}
+  .spinning .record{animation:spin 3.2s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+
+  .play{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:3;
+    width:78px;height:78px;border-radius:50%;border:0;cursor:pointer;
+    background:var(--paper);color:var(--ink);display:grid;place-items:center;
+    box-shadow:0 10px 24px -8px rgba(0,0,0,.5);transition:transform .2s ease, opacity .3s}
+  .play:active{transform:translate(-50%,-50%) scale(.94)}
+  .play svg{width:28px;height:28px}
+  .play[disabled]{opacity:.55}
+
+  h1{font-family:Fraunces,serif;font-weight:400;font-size:clamp(28px,8vw,38px);line-height:1.1;letter-spacing:-.01em}
+  h1 em{font-style:italic;color:var(--accent)}
+  .hint{color:var(--muted);font-size:15px;line-height:1.5;max-width:300px}
+
+  .eq{display:flex;gap:4px;height:18px;align-items:flex-end;justify-content:center;opacity:0;transition:opacity .4s}
+  .spinning .eq{opacity:1}
+  .eq i{width:4px;background:var(--accent);border-radius:2px;animation:eq 1s ease-in-out infinite}
+  .eq i:nth-child(2){animation-delay:-.3s}.eq i:nth-child(3){animation-delay:-.6s}.eq i:nth-child(4){animation-delay:-.15s}.eq i:nth-child(5){animation-delay:-.45s}
+  @keyframes eq{0%,100%{height:4px}50%{height:18px}}
+
+  .btn{appearance:none;border:0;cursor:pointer;font:600 15px/1 Inter,sans-serif;letter-spacing:.06em;text-transform:uppercase;
+    padding:18px 30px;border-radius:999px;background:var(--ink);color:var(--paper);
+    box-shadow:0 12px 26px -12px rgba(42,36,33,.6);transition:transform .15s ease, opacity .3s}
+  .btn:active{transform:scale(.97)}
+  .btn.ghost{background:transparent;color:var(--ink);box-shadow:inset 0 0 0 1.5px rgba(42,36,33,.25)}
+  .row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+  .hidden{display:none!important}
+
+  /* reveal card */
+  .answer{width:100%;background:#fffaf5;border-radius:22px;padding:30px 24px 26px;position:relative;
+    box-shadow:0 30px 60px -30px rgba(42,36,33,.45), 0 0 0 1px rgba(42,36,33,.05);
+    animation:pop .7s cubic-bezier(.2,.9,.25,1.15) both}
+  .answer .year{font-family:Fraunces,serif;font-weight:600;font-size:clamp(64px,22vw,96px);line-height:.9;color:var(--accent);letter-spacing:-.03em}
+  .answer .title{font-family:Fraunces,serif;font-size:clamp(22px,6.4vw,28px);line-height:1.2;margin-top:16px}
+  .answer .artist{font-size:14px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-top:10px}
+  .answer::before,.answer::after{content:"";position:absolute;top:50%;width:18px;height:18px;border-radius:50%;background:var(--paper);transform:translateY(-50%)}
+  .answer::before{left:-9px}.answer::after{right:-9px}
+  @keyframes pop{0%{opacity:0;transform:translateY(24px) scale(.96)}100%{opacity:1;transform:none}}
+  .flip{font-family:Fraunces,serif;font-style:italic;color:var(--muted);font-size:16px}
+
+  .small{font-size:13px;color:var(--muted)}
+  .small a{color:var(--accent)}
+  footer{font-family:Fraunces,serif;font-style:italic;color:var(--muted);font-size:13px;opacity:.8;margin-top:18px}
+  .ring{position:absolute;inset:-14px;z-index:0;pointer-events:none;transform:rotate(-90deg)}
+  .ring circle{fill:none;stroke-width:3}
+  .ring .bg{stroke:rgba(42,36,33,.08)}
+  .ring .fg{stroke:var(--accent);stroke-linecap:round;transition:stroke-dashoffset .25s linear}
+  .status{min-height:20px;font-size:14px;color:var(--muted);line-height:1.5;max-width:320px}
+  .status b{color:var(--ink);font-weight:600}
+  .spinner{width:22px;height:22px;border-radius:50%;border:2.5px solid var(--accent-soft);border-top-color:var(--accent);animation:spin .9s linear infinite;margin:0 auto}
+</style>
+</head>
+<body>
+  <div class="top"><span>a mi dalaink</span><span id="cardno"></span></div>
+
+  <main id="home" class="hidden">
+    <div class="record-wrap"><div class="record"></div><div class="label"><span>♪</span></div></div>
+    <h1>Szkennelj be egy <em>kártyát</em></h1>
+    <p class="hint">Nyisd meg a telefonod kameráját, és mutasd a QR-kódra. A zene a Spotifyodon fog szólni, de a cím titok marad.</p>
+  </main>
+
+  <main id="connect" class="hidden">
+    <div class="record-wrap"><div class="record"></div><div class="label"><span>♪</span></div></div>
+    <h1>Előbb kössük össze a <em>Spotifyoddal</em></h1>
+    <p class="hint">Ezt csak egyszer kell megcsinálni. Utána minden kártya egyből a refrénnél kezdődik.</p>
+    <button class="btn" id="login">Csatlakozás</button>
+    <p class="status" id="connectStatus"></p>
+  </main>
+
+  <main id="game" class="hidden">
+    <div class="record-wrap" id="recwrap">
+      <svg class="ring" viewBox="0 0 100 100"><circle class="bg" cx="50" cy="50" r="48"/><circle class="fg" id="ringfg" cx="50" cy="50" r="48" stroke-dasharray="301.6" stroke-dashoffset="301.6"/></svg>
+      <div class="record"></div>
+      <div class="label"><span>no. <b id="labelno"></b></span></div>
+      <button class="play" id="play" aria-label="Lejátszás" disabled>
+        <svg id="icoPlay" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13a1 1 0 0 0 1.5.86l10.5-6.5a1 1 0 0 0 0-1.72L9.5 4.64A1 1 0 0 0 8 5.5z"/></svg>
+        <svg id="icoPause" class="hidden" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="5" width="4" height="14" rx="1.2"/><rect x="14" y="5" width="4" height="14" rx="1.2"/></svg>
+      </button>
+    </div>
+
+    <div id="guessing">
+      <div class="eq"><i></i><i></i><i></i><i></i><i></i></div>
+      <h1 style="margin-top:14px">Mi ez a <em>dal?</em></h1>
+      <p class="hint" style="margin:12px auto 0">Előadó, cím, és ha mersz: évszám.</p>
+    </div>
+
+    <p class="status" id="status"><span class="spinner"></span></p>
+
+    <div class="row" id="revealRow">
+      <button class="btn" id="reveal">Felfedés</button>
+    </div>
+
+    <div id="result" class="hidden" style="width:100%">
+      <div class="answer">
+        <div class="year" id="aYear"></div>
+        <div class="title" id="aTitle"></div>
+        <div class="artist" id="aArtist"></div>
+      </div>
+      <p class="flip" style="margin-top:22px">Eltaláltad? Akkor tiéd a kártya – fordítsd meg ✦</p>
+    </div>
+  </main>
+
+  <footer>karácsony, 2026</footer>
+
+<script>
+/* ======= BEÁLLÍTÁS – ide jön a Spotify Client ID (a Spotify Developer Dashboardról) ======= */
+const CLIENT_ID = "f7bbb3cfe7114b2b9c36d7f6c9808fc0";
+/* ========================================================================================= */
+const REDIRECT_URI = "https://kiralyhanna06-ai.github.io/hitster/";
+const CLIP_SECONDS = 35;
+const SCOPES = "user-modify-playback-state user-read-playback-state";
+
+const DATA = "eyIxIjogWyJUYXlsb3IgU3dpZnQiLCAiU2hha2UgSXQgT2ZmIiwgMjAxNCwgIm5mV2xvdDZoX0pNIiwgIlpSVV85R3dpVHlBIiwgMSwgbnVsbCwgbnVsbF0sICIyIjogWyJCb24tQm9uIiwgIlZhbGFtaSBBbWVyaWthIiwgMjAwMiwgIll2Ym5vR2RQWjQ4IiwgIkNScjJXN19faTkwIiwgMiwgbnVsbCwgbnVsbF0sICIzIjogWyJPbmUgRGlyZWN0aW9uIiwgIldoYXQgTWFrZXMgWW91IEJlYXV0aWZ1bCIsIDIwMTEsICJRSk8zUk9ULUE0RSIsICJnTmdnUldUamxTWSIsIDEsIG51bGwsIG51bGxdLCAiNCI6IFsiR2xvcmlhIEdheW5vciIsICJJIFdpbGwgU3Vydml2ZSIsIDE5NzgsICI2ZFlXZTFjM095VSIsICJCTU9hZ2ZsaG1zWSIsIDEsIG51bGwsIG51bGxdLCAiNSI6IFsiQm9uLUJvbiIsICJBIHNleGVwaWxlbSIsIDE5OTksICIxVDJNbUtlT2tWNCIsICJLWlNTR0t6UFZNMCIsIDEsIG51bGwsIG51bGxdLCAiNiI6IFsiVE5UIiwgIlRpdGtvcyDDvHplbmV0IiwgMTk5NywgIi1ienZCOGFQc3p3IiwgImozMTk4Vnl5UXlBIiwgMiwgbnVsbCwgbnVsbF0sICI3IjogWyJIb25leWJlYXN0IiwgIkEgbGVnbmFneW9iYiBoxZFzIiwgMjAxNCwgIlhOY3FHZXc3X2ZzIiwgImlqVVhwS014a2hzIiwgMSwgbnVsbCwgbnVsbF0sICI4IjogWyJLSVNTIiwgIkkgV2FzIE1hZGUgZm9yIExvdmluJyBZb3UiLCAxOTc5LCAiMTJmSkFuYWlmMzQiLCAiWmhJc0FaTzVnbDAiLCAyLCBudWxsLCBudWxsXSwgIjkiOiBbIk1yLiBNaXNzaCwgUmF1bCAmIEhvcnbDoXRoIFRhbcOhcyIsICJCZWzDqWQgZXN0ZW0iLCAyMDEzLCAiNTIwTE55MW41WFUiLCAiVF8yN0Y5YkcwNUUiLCAxLCBudWxsLCBudWxsXSwgIjEwIjogWyJIYXJyeSBTdHlsZXMiLCAiV2F0ZXJtZWxvbiBTdWdhciIsIDIwMTksICJFMDdzNVpZeWdNZyIsICJLUE1fQllsLUVhUSIsIDEsIG51bGwsIG51bGxdLCAiMTEiOiBbIlN6YW5kaSIsICJOeXVnaSwgZG9raSEiLCAxOTkzLCAicnZDanctQ0g0b0kiLCAiZnRPeHllQXUyTzgiLCAyLCBudWxsLCBudWxsXSwgIjEyIjogWyJSZXB1YmxpYyIsICJTesOhbGxqIGVsLCBraXNtYWTDoXIiLCAxOTk1LCAiLWI1alVvYlZOSTQiLCAiM2VWQ1BxS24xNkUiLCAyLCBudWxsLCBudWxsXSwgIjEzIjogWyJLYXR5IFBlcnJ5IiwgIkkgS2lzc2VkIGEgR2lybCIsIDIwMDgsICJ0QXA5Qktvc1pYcyIsICJ1c3ZUYnFUSHd5dyIsIDEsIG51bGwsIG51bGxdLCAiMTQiOiBbIkRSIEJSUyAmIEJlcmtlcyBPbGl2w6lyIiwgIsOJdnN6YWtvayIsIDIwMjAsICJLY3ltQllyeDFETSIsICJJY296TnIxVU1pcyIsIDIsIG51bGwsIG51bGxdLCAiMTUiOiBbIlZhcmdhIFZpa3RvciIsICJMZWhldCB6w7ZsZCBheiDDqWciLCAyMDEwLCAiM0p2LUJFUEYxOG8iLCAiX1N4RVBUd0FZVGMiLCAxLCBudWxsLCBudWxsXSwgIjE2IjogWyJ3aWxsLmkuYW0gJiBCcml0bmV5IFNwZWFycyIsICJTY3JlYW0gJiBTaG91dCIsIDIwMTIsICJFRC1YS2dkdDYtNCIsICJhNUQ4Q1R0LXRmcyIsIDIsIG51bGwsIG51bGxdLCAiMTciOiBbIk9uZSBEaXJlY3Rpb24iLCAiUGVyZmVjdCIsIDIwMTUsICJIbzMyT2g2YjRqYyIsICI2cG9Ka3pBbDZTcyIsIDEsIG51bGwsIG51bGxdLCAiMTgiOiBbIlphbnppYmFyIiwgIlN6ZXJlbGVtcsWRbCBzesOzIHNlbSB2b2x0IiwgMjAwMiwgImNXT0N4ODVQaTBvIiwgIlB2cWpFWk9UaC1VIiwgMiwgbnVsbCwgbnVsbF0sICIxOSI6IFsiWm9sdMOhbiBFcmlrYSIsICJTemVyZWxlbXJlIHN6w7xsZXR0ZW0iLCAxOTg3LCAiaHo1NlcyejVIMm8iLCAiWklQRl9iSEE5MlkiLCAyLCBudWxsLCBudWxsXSwgIjIwIjogWyJNw6F0w6kgUMOpdGVyIiwgIlplbmUgbsOpbGvDvGwgbWl0IMOpcmVrIMOpbiIsIDE5ODIsICJOS3pXZEU0WU9UWSIsICJlbkRjZ24yVUVtcyIsIDEsIG51bGwsIG51bGxdLCAiMjEiOiBbIkJydW5vIE1hcnMiLCAiSnVzdCB0aGUgV2F5IFlvdSBBcmUiLCAyMDEwLCAiTGpoQ0VoV2lLWGsiLCAiU09EaGwwNDZSUmMiLCAxLCBudWxsLCBudWxsXSwgIjIyIjogWyJFZGRhIE3FsXZlayIsICLDgWxtb2R0YW0gZWd5IHZpbMOhZ290IG1hZ2FtbmFrIiwgMTk4MCwgIlhoY1F1cDRiZDB3IiwgIllZTDBBaWhzdE5rIiwgMSwgbnVsbCwgbnVsbF0sICIyMyI6IFsiSGV2ZXNpIFRhbcOhcyIsICJFenQgZWd5IMOpbGV0ZW4gw6F0IGtlbGwgasOhdHN6YW5pIiwgMTk5NCwgIjAxbW80S2tERk1vIiwgIjRmbklCTDd2NFhvIiwgMiwgbnVsbCwgbnVsbF0sICIyNCI6IFsiTcOhdMOpIFDDqXRlciIsICJFZ3kgZGFyYWJvdCBhIHN6w612ZW1ixZFsIiwgMTk3OSwgIkhReG12SlFUdzg0IiwgIkFqdFZ0X21wZzZVIiwgMiwgbnVsbCwgbnVsbF0sICIyNSI6IFsiTcOlbmVza2luIiwgIkkgV2FubmEgQmUgWW91ciBTbGF2ZSIsIDIwMjEsICJ5T2I5WGF1ZzM1TSIsICIwVC1CQ0lGZXFxOCIsIDEsIG51bGwsIG51bGxdLCAiMjYiOiBbIkdyb292ZWhvdXNlIiwgIkhham5hbCIsIDIwMDEsICJ2SnRFekViX3RDSSIsICJ1MjVWSDFTRy1XSSIsIDIsIG51bGwsIG51bGxdLCAiMjciOiBbIk9uZSBEaXJlY3Rpb24iLCAiU3RlYWwgTXkgR2lybCIsIDIwMTQsICJVcHNLR3ZQakFndyIsICJnbk5famllc0lrTSIsIDIsIG51bGwsIG51bGxdLCAiMjgiOiBbIsOBa29zIiwgIklseWVuZWsgdm9sdHVuayIsIDE5OTcsICJVUmJZZWk1MTNZMCIsICJkbWR0S3NVWkYxayIsIDIsIG51bGwsIG51bGxdLCAiMjkiOiBbIldvbGYgS2F0aSIsICJTemVyZWxlbSwgbWnDqXJ0IG3Dumxzej8iLCAyMDExLCAic2VpcC11NEtTY1UiLCAib0Jya3ItOVBZYUUiLCAyLCBudWxsLCBudWxsXSwgIjMwIjogWyJGb2xsb3cgVGhlIEZsb3ciLCAiVGF2YXN6IiwgMjAyMCwgIjQtTXlHOV84VkFnIiwgIkFTOEpBUDFWVXdRIiwgMiwgbnVsbCwgbnVsbF0sICIzMSI6IFsiSGFsb3R0IFDDqW56IiwgIkRhcmFib2tyYSB0w7ZydGVkIGEgc3rDrXZlbSIsIDIwMTUsICJLVVU3UnBHQVJubyIsICJzdUpDWl9DVXktZyIsIDEsIG51bGwsIG51bGxdLCAiMzIiOiBbIlNvdWx3YXZlIiwgIk5laGV6ZW4gbcO6bGlrIiwgMjAxNywgIkhaVDYyRll2eDNZIiwgIlI2UTBnNy1MQW1FIiwgMiwgbnVsbCwgbnVsbF0sICIzMyI6IFsiQmFja3N0cmVldCBCb3lzIiwgIkV2ZXJ5Ym9keSAoQmFja3N0cmVldCdzIEJhY2spIiwgMTk5NywgIjZNNnNhbVBFTXBNIiwgIk02LUE2c0FhV1VnIiwgMSwgbnVsbCwgbnVsbF0sICIzNCI6IFsiS2VzaGEiLCAiVGlLIFRvSyIsIDIwMDksICJpUDZYcExRTTJDcyIsICJSeFVaTG1ONVJzWSIsIDEsIG51bGwsIG51bGxdLCAiMzUiOiBbIlNvdWx3YXZlIiwgIkthbGFuZG9yIiwgMjAxNiwgInpnYzMwRGxSUjhBIiwgIjAzYzNUbXo5TlV3IiwgMSwgbnVsbCwgbnVsbF0sICIzNiI6IFsiQmFieSBTaXN0ZXJzIiwgIlN6ZXJlc2QgYSB0ZXN0ZW0iLCAxOTk5LCAiaVVUdmZyazBwQkEiLCAiUy1xQ1FfNFVFeUEiLCAxLCBudWxsLCBudWxsXSwgIjM3IjogWyJCZXJlY3praSBab2x0w6FuIiwgIktlcmVrIGVnw6lzeiIsIDIwMTAsICI5aUlvQ2RNb1pYcyIsICJXS216WWpNQnJSbyIsIDEsIG51bGwsIG51bGxdLCAiMzgiOiBbIkJlYXRyaWNlIiwgIjggw7NyYSBtdW5rYSIsIDE5OTEsICJiNVRFZzNXTzdfUSIsICJQenVESlhQMVRvbyIsIDIsIG51bGwsIG51bGxdLCAiMzkiOiBbIkphbmljc8OhayBWZWNhIiwgIkxhYmlyaW50dXMiLCAyMDExLCAibHMwcTQxMV93bnciLCAiNG9KRFVZNzRxOEEiLCAyLCBudWxsLCBudWxsXSwgIjQwIjogWyJTesOpY3NpIFDDoWwiLCAiQ2Fyb2xpbmEiLCAxOTc0LCAiTUpRT0ZVSjBpcnciLCAibEVHc1pQVmNpWFEiLCAyLCBudWxsLCBudWxsXX0=";
+const songs = JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(DATA), c => c.charCodeAt(0))));
+const $ = id => document.getElementById(id);
+const store = {
+  get(k){ try{ return JSON.parse(localStorage.getItem('ami_' + k)); }catch(e){ return null; } },
+  set(k, v){ try{ localStorage.setItem('ami_' + k, JSON.stringify(v)); }catch(e){} }
+};
+
+/* ---------- Spotify auth (PKCE) ---------- */
+const b64url = buf => btoa(String.fromCharCode(...new Uint8Array(buf))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+async function login(k){
+  const verifier = b64url(crypto.getRandomValues(new Uint8Array(48)));
+  const challenge = b64url(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(verifier)));
+  store.set('verifier', verifier);
+  const q = new URLSearchParams({ client_id: CLIENT_ID, response_type: 'code', redirect_uri: REDIRECT_URI,
+    scope: SCOPES, code_challenge_method: 'S256', code_challenge: challenge, state: k || '' });
+  location.href = 'https://accounts.spotify.com/authorize?' + q;
+}
+async function tokenRequest(body){
+  const r = await fetch('https://accounts.spotify.com/api/token', { method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: new URLSearchParams(body) });
+  if(!r.ok) throw new Error('token ' + r.status);
+  const t = await r.json();
+  const old = store.get('tok') || {};
+  store.set('tok', { access: t.access_token, refresh: t.refresh_token || old.refresh, exp: Date.now() + (t.expires_in - 60) * 1000 });
+}
+async function accessToken(){
+  const t = store.get('tok');
+  if(!t) return null;
+  if(Date.now() < t.exp) return t.access;
+  try{ await tokenRequest({ grant_type: 'refresh_token', refresh_token: t.refresh, client_id: CLIENT_ID }); }
+  catch(e){ store.set('tok', null); return null; }
+  return store.get('tok').access;
+}
+async function api(path, opts = {}){
+  const tok = await accessToken();
+  if(!tok) throw new Error('auth');
+  const r = await fetch('https://api.spotify.com/v1' + path, { ...opts,
+    headers: { Authorization: 'Bearer ' + tok, ...(opts.body ? { 'Content-Type': 'application/json' } : {}) } });
+  if(r.status === 401){ store.set('tok', null); throw new Error('auth'); }
+  if(r.status === 204 || r.status === 202) return null;
+  const txt = await r.text();
+  if(!r.ok){ const e = new Error('api ' + r.status); e.status = r.status; e.body = txt; throw e; }
+  return txt ? JSON.parse(txt) : null;
+}
+
+/* ---------- finding the track and its chorus ---------- */
+const norm = s => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/\(.*?\)|\[.*?\]/g,'').replace(/[^a-z0-9 ]/g,' ').replace(/\s+/g,' ').trim();
+const BAD = /\b(live|elo|koncert|remix|mix|acoustic|akusztik|karaoke|instrumental|cover|version|verzio|edit|sped|slowed|demo|remaster(?!ed))\b/;
+async function findTrack(song){
+  if(song[6]) return { uri: 'spotify:track:' + song[6], duration: null };
+  const cacheKey = 'trk_' + norm(song[0] + ' ' + song[1]);
+  const cached = store.get(cacheKey); if(cached) return cached;
+  const firstArtist = song[0].split(/,|&| x | feat/i)[0].trim();
+  const queries = [`track:${song[1]} artist:${firstArtist}`, `${song[1]} ${firstArtist}`];
+  let best = null;
+  for(const q of queries){
+    const res = await api('/search?type=track&limit=10&q=' + encodeURIComponent(q));
+    const items = (res && res.tracks && res.tracks.items) || [];
+    const want = norm(song[1]), wantA = norm(firstArtist);
+    const scored = items.map((t, i) => {
+      const n = norm(t.name), arts = t.artists.map(a => norm(a.name));
+      let s = 0;
+      if(n === want) s += 50; else if(n.startsWith(want) || want.startsWith(n)) s += 30; else if(n.includes(want)) s += 15;
+      if(arts.some(a => a === wantA)) s += 40; else if(arts.some(a => a.includes(wantA) || wantA.includes(a))) s += 25;
+      if(BAD.test(norm(t.name)) && !BAD.test(want)) s -= 35;
+      if(t.album && BAD.test(norm(t.album.name))) s -= 10;
+      s -= i;                       // Spotify's own ranking as tie-break
+      return { s, t };
+    }).sort((a, b) => b.s - a.s);
+    if(scored.length && scored[0].s >= 40){ best = scored[0].t; break; }
+  }
+  if(!best) return null;
+  const out = { uri: best.uri, duration: best.duration_ms / 1000, name: best.name, artist: best.artists[0].name, album: best.album && best.album.name };
+  store.set(cacheKey, out);
+  return out;
+}
+function chorusFromLrc(lrc){
+  const lines = [];
+  for(const raw of lrc.split('\n')){
+    const m = raw.match(/^\[(\d+):(\d+(?:\.\d+)?)\](.*)$/);
+    if(!m) continue;
+    const text = norm(m[3]);
+    if(text.length < 6) continue;
+    lines.push({ t: +m[1] * 60 + +m[2], text });
+  }
+  if(lines.length < 6) return null;
+  const count = {};
+  lines.forEach(l => count[l.text] = (count[l.text] || 0) + 1);
+  const max = Math.max(...Object.values(count));
+  if(max < 2) return null;
+  // the first line of the most repeated block = earliest line that is repeated as often as the top line
+  const first = lines.find(l => count[l.text] >= Math.max(2, max - 1) && l.t > 8);
+  if(!first) return null;
+  // walk back to the start of that block (previous lines repeated just as often)
+  let i = lines.indexOf(first);
+  while(i > 0 && count[lines[i-1].text] >= Math.max(2, max - 1) && first.t - lines[i-1].t < 20) i--;
+  return lines[i].t;
+}
+async function findChorus(song, track){
+  if(song[7] != null) return song[7];
+  const cacheKey = 'cho_' + track.uri;
+  const cached = store.get(cacheKey); if(cached != null) return cached;
+  let start = null;
+  try{
+    const p = new URLSearchParams({ track_name: track.name || song[1], artist_name: track.artist || song[0] });
+    if(track.duration) p.set('duration', Math.round(track.duration));
+    let r = await fetch('https://lrclib.net/api/get?' + p);
+    let j = r.ok ? await r.json() : null;
+    if(!j || !j.syncedLyrics){
+      r = await fetch('https://lrclib.net/api/search?' + new URLSearchParams({ q: (track.artist || song[0]) + ' ' + (track.name || song[1]) }));
+      const list = r.ok ? await r.json() : [];
+      j = list.filter(x => x.syncedLyrics && (!track.duration || Math.abs(x.duration - track.duration) < 4))[0] || null;
+    }
+    if(j && j.syncedLyrics) start = chorusFromLrc(j.syncedLyrics);
+  }catch(e){}
+  if(start == null){
+    const d = track.duration || 200;
+    start = Math.min(60, d * 0.3);
+  }
+  start = Math.max(0, start - 1.5);
+  if(track.duration && start + CLIP_SECONDS > track.duration) start = Math.max(0, track.duration - CLIP_SECONDS - 2);
+  store.set(cacheKey, start);
+  return start;
+}
+
+/* ---------- page ---------- */
+(async function main(){
+  const params = new URLSearchParams(location.search);
+
+  // returning from Spotify login
+  if(params.get('code')){
+    const k = params.get('state');
+    try{
+      await tokenRequest({ grant_type: 'authorization_code', code: params.get('code'), redirect_uri: REDIRECT_URI,
+        client_id: CLIENT_ID, code_verifier: store.get('verifier') });
+    }catch(e){
+      show('connect'); $('connectStatus').textContent = 'Nem sikerült a bejelentkezés. Próbáld újra.'; return;
+    }
+    history.replaceState(null, '', REDIRECT_URI + (k ? '?k=' + k : ''));
+    return main();
+  }
+  if(params.get('error')){
+    history.replaceState(null, '', REDIRECT_URI + (params.get('state') ? '?k=' + params.get('state') : ''));
+  }
+
+  const k = params.get('k') || params.get('state');
+  const song = k && songs[k];
+  if(!song){ show('home'); return; }
+  if(song[5] === 2) document.body.classList.add('p2');
+
+  if(!(await accessToken())){
+    show('connect');
+    $('login').onclick = () => login(k);
+    return;
+  }
+
+  show('game');
+  $('cardno').innerHTML = 'kártya <b>' + String(k).padStart(2,'0') + '</b>';
+  $('labelno').textContent = String(k).padStart(2,'0');
+  $('aYear').textContent = song[2];
+  $('aTitle').textContent = song[1];
+  $('aArtist').textContent = song[0];
+  $('reveal').onclick = () => {
+    $('revealRow').classList.add('hidden'); $('guessing').classList.add('hidden');
+    $('result').classList.remove('hidden');
+    $('result').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  };
+
+  let track, start;
+  try{
+    track = await findTrack(song);
+    if(!track){ setStatus('Ezt a dalt nem találtam meg a Spotifyon. 😕'); return; }
+    start = await findChorus(song, track);
+  }catch(e){
+    if(e.message === 'auth'){ show('connect'); $('login').onclick = () => login(k); return; }
+    setStatus('Valami hiba történt a Spotifyval. Próbáld újratölteni az oldalt.'); return;
+  }
+  setStatus('');
+  $('play').disabled = false;
+
+  let playing = false, timer = null, tick = null, t0 = 0, played = 0;
+  const ringLen = 301.6;
+  const setRing = f => $('ringfg').style.strokeDashoffset = ringLen * (1 - Math.min(1, f));
+
+  async function pickDevice(){
+    const d = await api('/me/player/devices');
+    const list = (d && d.devices) || [];
+    return list.find(x => x.is_active) || list.find(x => x.type === 'Smartphone') || list[0] || null;
+  }
+  async function stop(){
+    clearTimeout(timer); clearInterval(tick);
+    if(playing){ try{ await api('/me/player/pause', { method: 'PUT' }); }catch(e){} }
+    setPlaying(false);
+  }
+  async function play(){
+    setStatus('<span class="spinner"></span>');
+    let dev;
+    try{ dev = await pickDevice(); }catch(e){ return handleErr(e); }
+    if(!dev){
+      setStatus('Nyisd meg egy pillanatra a <b>Spotify</b> appot (ne nézd, mi szól benne!), aztán gyere vissza, és nyomd meg újra a lejátszást.');
+      return;
+    }
+    const remaining = Math.max(1, CLIP_SECONDS - played);
+    try{
+      await api('/me/player/play?device_id=' + dev.id, { method: 'PUT',
+        body: JSON.stringify({ uris: [track.uri], position_ms: Math.round((start + played) * 1000) }) });
+    }catch(e){ return handleErr(e); }
+    setStatus('');
+    setPlaying(true);
+    t0 = Date.now() - played * 1000;
+    tick = setInterval(() => { played = (Date.now() - t0) / 1000; setRing(played / CLIP_SECONDS); }, 200);
+    timer = setTimeout(async () => { played = CLIP_SECONDS; setRing(1); await stop(); played = 0; setTimeout(() => setRing(0), 900); }, remaining * 1000);
+  }
+  function handleErr(e){
+    if(e.message === 'auth'){ show('connect'); $('login').onclick = () => login(k); return; }
+    if(e.status === 403) setStatus('A Spotify nem engedte a lejátszást. Ehhez Premium fiók kell, és a fióknak szerepelnie kell az app felhasználói között.');
+    else if(e.status === 404) setStatus('Nyisd meg egy pillanatra a <b>Spotify</b> appot, aztán próbáld újra.');
+    else setStatus('Nem indult el a zene. Próbáld újra!');
+    setPlaying(false);
+  }
+  function setPlaying(on){
+    playing = on;
+    document.getElementById('game').classList.toggle('spinning', on);
+    $('icoPlay').classList.toggle('hidden', on);
+    $('icoPause').classList.toggle('hidden', !on);
+  }
+  $('play').onclick = () => { playing ? stop() : play(); };
+})();
+
+function show(id){ ['home','connect','game'].forEach(x => $(x).classList.toggle('hidden', x !== id)); }
+function setStatus(html){ $('status').innerHTML = html; }
+</script>
+</body>
+</html>
